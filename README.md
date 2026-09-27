@@ -46,7 +46,7 @@ Then Add that cloned folder the same way.
 
 ## Demo
 
-https://github.com/cayatur/CaYaHeatSeekerBot/blob/main/demo.mp4
+<video src="demo.mp4" controls muted></video>
 
 ## Author
 
