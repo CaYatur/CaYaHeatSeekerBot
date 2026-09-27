@@ -1,5 +1,7 @@
 # CaYaHeatSeekerBot
 
+![CaYaHeatSeekerBot](src/logo.png)
+
 Heatseeker **training goalie** for [RLBot](https://rlbot.org).
 
 Camps its own net, state-sets onto incoming shots, and counters with skewed forward-jump hits.
