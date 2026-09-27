@@ -1,6 +1,8 @@
 # CaYaHeatSeekerBot
 
-![CaYaHeatSeekerBot](src/logo.png)
+<p align="center">
+  <img src="src/logo.png" width="200" alt="CaYaHeatSeekerBot">
+</p>
 
 Heatseeker **training goalie** for [RLBot](https://rlbot.org).
 
