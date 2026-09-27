@@ -10,37 +10,48 @@ Camps its own net, state-sets onto incoming shots, and counters with skewed forw
 
 Offline practice only. Not for ranked, online, or RLBot tournaments.
 
+## Features
+
+- **Goalie only** — stays on its own half, waits near the net, does not roam midfield.
+- **Teleport saves** — when the ball is coming in, the car is state-set onto the shot so contact is consistent.
+- **Fast-shot wall** — on very high ball speed or a ball already in the crease, it sits *in front* of the ball instead of jumping through it.
+- **Jump counters** — normal saves use a forward aerial-style smash with a locked-in skewed pitch / yaw / roll so the clearance is not a flat center tap.
+- **Own-half leash** — will come out for mid-range shots on its half, then return to the net. It does not chase into the opponent half.
+- **Graze recovery** — if it clips the ball but the ball is still going toward the net, it keeps locking instead of idling.
+- **Heatseeker match** — built for homing-ball defense practice, not standard soccar.
+
+State Setting must be enabled. Without it the bot cannot teleport and will look stuck.
+
 ## Install the bot (easiest)
 
 1. Install [RLBotGUI](https://rlbot.org) if needed.
 2. On this GitHub page click green **Code** → **Download ZIP**.
-3. Extract the zip. Open the folder until you see `bot.cfg` in it  
-   (often named `CaYaHeatSeekerBot-main`).
+3. Extract the zip. Open folders until you see `bot.cfg`  
+   (usually `CaYaHeatSeekerBot-main/src`).
 4. RLBotGUI → **+ Add** → pick that folder  
    (or **Manage bot folders** → add the same folder).  
    **CaYaHeatSeekerBot** should show up in the bot list.
 
-Alternative if you use Git:
-git clone https://github.com/cayatur/CaYaHeatSeekerBot.git
+Git: git clone https://github.com/CaYatur/CaYaHeatSeekerBot.git
 
-Then Add that cloned folder the same way.
+Then Add the `src` folder the same way.
 
 ## Play
 
-1. RLBotGUI → **Extra** → tick **Enable State Setting**.  
-   Required. Without it the bot cannot teleport.
+1. RLBotGUI → **Extra** → tick **Enable State Setting**.
 2. Match settings → mode **Heatseeker**.
-3. Drag **CaYaHeatSeekerBot** onto a team. Add yourself on the other team if you want to shoot on it.
+3. Drag **CaYaHeatSeekerBot** onto a team. Put yourself on the other team to shoot on it.
 4. Start match.
 
 ## Files
 
 | File | Role |
 |---|---|
-| `bot.py` | Save and counter logic |
-| `bot.cfg` | Name, tags, logo |
-| `appearance.cfg` | Loadout |
-| `logo.png` | GUI icon |
+| `src/bot.py` | Save and counter logic |
+| `src/bot.cfg` | Name, tags, logo |
+| `src/appearance.cfg` | Loadout |
+| `src/logo.png` | GUI icon |
+| `src/util/` | Vec / steer helpers |
 
 ## Notes
 
