@@ -43,6 +43,34 @@ Then Add the `src` folder the same way.
 3. Drag **CaYaHeatSeekerBot** onto a team. Put yourself on the other team to shoot on it.
 4. Start match.
 
+## Example setups
+
+### Redirect practice
+
+You play the field. CaYaHeatSeekerBot sits in **your** net. A Heatseeker goalie sits in the **other** net.
+
+| Team | Player |
+|---|---|
+| Your team | You + **CaYaHeatSeekerBot** |
+| Other team | **blind and deaf** (RLBot pack — hover Heatseeker goalie) |
+
+Flow: they shoot / the ball homes into your net → CaYa saves and punches out → you redirect. Repeat.
+
+`blind and deaf` is already in RLBotGUI if the bot pack is installed. Search the bot list for that name.
+
+### Shooting / beat-the-keeper practice
+
+CaYaHeatSeekerBot only defends. It will not take kickoff. Put a simple hitter next to it so the rally starts.
+
+| Team | Player |
+|---|---|
+| Your team | You |
+| Other team | **CaYaHeatSeekerBot** + **Psyonix Allstar** (or any pack bot that kicks the ball) |
+
+Psyonix Allstar / ReliefBot / the Python example bot are enough for the first touch. After that CaYa holds their net and you practice scoring on a keeper that almost does not concede.
+
+Both setups: Extra → **Enable State Setting**, mode **Heatseeker**.
+
 ## Files
 
 | File | Role |
