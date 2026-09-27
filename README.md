@@ -44,6 +44,10 @@ Then Add that cloned folder the same way.
 - Do not use this in ranked Heatseeker.
 - If the bot stands still, State Setting is off.
 
+## Demo
+
+https://github.com/cayatur/CaYaHeatSeekerBot/blob/main/demo.mp4
+
 ## Author
 
 ÇAĞAN TURGUT — CaYaDev
