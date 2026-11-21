@@ -1,9 +1,15 @@
 import math
 import random
 
-from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
-from rlbot.utils.structures.game_data_struct import GameTickPacket
-from rlbot.utils.game_state_util import GameState, CarState, Physics, Vector3, Rotator
+from rlbot.flat import (
+    ControllerState,
+    DesiredCarState,
+    DesiredPhysics,
+    GamePacket,
+    RotatorPartial,
+    Vector3Partial,
+)
+from rlbot.managers import Bot
 
 from util.drive import steer_toward_target
 from util.vec import Vec3
@@ -13,23 +19,57 @@ GOAL = 5120.0
 POST = 893.0
 REACH = 2400.0
 
+AGENT_ID = "cayatur/cayaheatseekerbot/1.0.0"
 
-class MyBot(BaseAgent):
-    def initialize_agent(self):
+
+class _Touch:
+    """v4-style view of the ball's latest touch (v5 stores touches per player)."""
+
+    __slots__ = ("time_seconds", "team")
+
+    def __init__(self, time_seconds: float = 0.0, team: int = -1):
+        self.time_seconds = time_seconds
+        self.team = team
+
+
+def _latest_ball_touch(packet: GamePacket, ball_index: int = 0) -> _Touch:
+    # RLBot v4 exposed packet.game_ball.latest_touch (the most recent touch by any
+    # player, with its team). In v5 every PlayerInfo carries its own latest_touch,
+    # so pick the most recent one on this ball and take the toucher's team.
+    best = _Touch()
+    for player in packet.players:
+        t = player.latest_touch
+        if t is None or t.ball_index != ball_index:
+            continue
+        if t.game_seconds > best.time_seconds:
+            best = _Touch(t.game_seconds, player.team)
+    return best
+
+
+class MyBot(Bot):
+    skew = 1.0
+    pose = None
+    last_touch_time = -1.0
+
+    def initialize(self):
         self.skew = 1.0
         self.pose = None
         self.last_touch_time = -1.0
 
-    def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
-        me = packet.game_cars[self.index]
-        if me.is_demolished:
-            return SimpleControllerState()
+    def get_output(self, packet: GamePacket) -> ControllerState:
+        if len(packet.balls) == 0:
+            # No ball (e.g. during goal replays) - nothing to do this tick.
+            return ControllerState()
 
-        now = packet.game_info.seconds_elapsed
-        ball = Vec3(packet.game_ball.physics.location)
-        bvel = Vec3(packet.game_ball.physics.velocity)
+        me = packet.players[self.index]
+        if me.demolished_timeout >= 0:  # -1 while not demolished
+            return ControllerState()
+
+        now = packet.match_info.seconds_elapsed
+        ball = Vec3(packet.balls[0].physics.location)
+        bvel = Vec3(packet.balls[0].physics.velocity)
         car = Vec3(me.physics.location)
-        touch = packet.game_ball.latest_touch
+        touch = _latest_ball_touch(packet)
 
         own_y = -GOAL if self.team == 0 else GOAL
         out = 1.0 if self.team == 0 else -1.0
@@ -70,7 +110,7 @@ class MyBot(BaseAgent):
 
         if incoming:
             self._tp_hit(ball, bvel, own_y, out, speed, dist_goal)
-            c = SimpleControllerState()
+            c = ControllerState()
             c.throttle = 1.0
             c.boost = True
             c.jump = True
@@ -81,7 +121,7 @@ class MyBot(BaseAgent):
         home = Vec3(max(-800.0, min(800.0, ball.x * 0.45)), own_y + out * 70.0, 17.0)
         if car.dist(home) > 500:
             self._set(home.x, home.y, 17.0, 0.0, math.atan2(out, 0.0), 0.0, 0.0, 0.0, 0.0)
-        c = SimpleControllerState()
+        c = ControllerState()
         c.steer = steer_toward_target(me, home)
         c.throttle = 0.5 if car.dist(home) > 80 else 0.0
         return c
@@ -125,16 +165,21 @@ class MyBot(BaseAgent):
         self._set(x, y, z, pitch, yaw, roll, vx, vy, vz)
 
     def _set(self, x, y, z, pitch, yaw, roll, vx, vy, vz):
-        self.set_game_state(GameState(cars={
-            self.index: CarState(
-                physics=Physics(
-                    location=Vector3(x, y, z),
-                    velocity=Vector3(vx, vy, vz),
-                    rotation=Rotator(pitch, yaw, roll),
-                    angular_velocity=Vector3(-4.0, 0.0, self.skew * 1.5),
+        # NOTE: v4's CarState(jumped=True, double_jumped=True) has no equivalent in
+        # RLBot v5's DesiredCarState (only physics + boost_amount can be set).
+        self.set_game_state_parts(cars={
+            self.index: DesiredCarState(
+                physics=DesiredPhysics(
+                    location=Vector3Partial(x, y, z),
+                    velocity=Vector3Partial(vx, vy, vz),
+                    rotation=RotatorPartial(pitch, yaw, roll),
+                    angular_velocity=Vector3Partial(-4.0, 0.0, self.skew * 1.5),
                 ),
                 boost_amount=100.0,
-                jumped=True,
-                double_jumped=True,
             )
-        }))
+        })
+
+
+if __name__ == "__main__":
+    # RLBOT_AGENT_ID (set by RLBot) takes precedence over this default.
+    MyBot(AGENT_ID).run(wants_match_communications=False, wants_ball_predictions=False)

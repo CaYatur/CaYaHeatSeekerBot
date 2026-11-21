@@ -1,7 +1,6 @@
-# CaYaHeatSeeker — Fennec Ombre / Dueling Dragons
-# GUI'den kontrol: (i) → Edit Appearance
+# CaYaHeatSeeker — Fennec Ombre / Dueling Dragons (converted from the v4 appearance.cfg)
 
-[Bot Loadout]
+[blue_loadout]
 team_color_id = 33
 custom_color_id = 90
 car_id = 4284
@@ -16,7 +15,7 @@ engine_audio_id = 6919
 trails_id = 1997
 goal_explosion_id = 2044
 
-[Bot Loadout Orange]
+[orange_loadout]
 team_color_id = 37
 custom_color_id = 70
 car_id = 4284
@@ -31,7 +30,7 @@ engine_audio_id = 5635
 trails_id = 1997
 goal_explosion_id = 2044
 
-[Bot Paint Blue]
+[blue_loadout.paint]
 car_paint_id = 3
 decal_paint_id = 0
 wheels_paint_id = 12
@@ -41,7 +40,7 @@ hat_paint_id = 0
 trails_paint_id = 5
 goal_explosion_paint_id = 12
 
-[Bot Paint Orange]
+[orange_loadout.paint]
 car_paint_id = 3
 decal_paint_id = 0
 wheels_paint_id = 12

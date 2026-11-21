@@ -1,12 +1,11 @@
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
 
-from rlbot.utils.structures.game_data_struct import GameTickPacket, FieldInfoPacket
+from rlbot.flat import FieldInfo, GamePacket
 
 from util.vec import Vec3
 
 
-@dataclass
+@dataclass(slots=True)
 class BoostPad:
     location: Vec3
     is_full_boost: bool
@@ -14,6 +13,7 @@ class BoostPad:
     timer: float  # Counts the number of seconds that the pad has been *inactive*
 
 
+@dataclass(init=False, slots=True)
 class BoostPadTracker:
     """
     This class merges together the boost pad location info with the is_active info so you can access it
@@ -21,23 +21,24 @@ class BoostPadTracker:
     game has started, and then update_boost_status every frame so that it knows which pads are active.
     """
 
-    def __init__(self):
-        self.boost_pads: List[BoostPad] = []
-        self._full_boosts_only: List[BoostPad] = []
+    boost_pads: list[BoostPad] = field(default_factory=lambda: [])
+    _full_boosts_only: list[BoostPad] = field(default_factory=lambda: [])
 
-    def initialize_boosts(self, game_info: FieldInfoPacket):
-        raw_boosts = [game_info.boost_pads[i] for i in range(game_info.num_boosts)]
-        self.boost_pads: List[BoostPad] = [BoostPad(Vec3(rb.location), rb.is_full_boost, False, 0) for rb in raw_boosts]
+    def initialize_boosts(self, game_info: FieldInfo):
+        self.boost_pads = [
+            BoostPad(Vec3(rb.location), rb.is_full_boost, False, 0)
+            for rb in game_info.boost_pads
+        ]
+
         # Cache the list of full boosts since they're commonly requested.
         # They reference the same objects in the boost_pads list.
-        self._full_boosts_only: List[BoostPad] = [bp for bp in self.boost_pads if bp.is_full_boost]
+        self._full_boosts_only = [bp for bp in self.boost_pads if bp.is_full_boost]
 
-    def update_boost_status(self, packet: GameTickPacket):
-        for i in range(packet.num_boost):
+    def update_boost_status(self, packet: GamePacket):
+        for i, packet_pad in enumerate(packet.boost_pads):
             our_pad = self.boost_pads[i]
-            packet_pad = packet.game_boosts[i]
             our_pad.is_active = packet_pad.is_active
             our_pad.timer = packet_pad.timer
 
-    def get_full_boosts(self) -> List[BoostPad]:
+    def get_full_boosts(self) -> list[BoostPad]:
         return self._full_boosts_only

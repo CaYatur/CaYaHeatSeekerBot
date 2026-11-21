@@ -1,0 +1,29 @@
+#:schema https://rlbot.org/schemas/agent.json
+[settings]
+# Unique id of this bot: <author>/<bot>/<version>
+agent_id = "cayatur/cayaheatseekerbot/1.0.0"
+# Name displayed in game
+name = "CaYaHeatSeekerBot"
+# Loadout (Fennec Ombre / Dueling Dragons), relative to this file
+loadout_file = "loadout.toml"
+# Logo shown in the RLBot GUI, relative to this file
+logo_file = "logo.png"
+# Commands run from this folder (src/) when running straight from the repository.
+# bob replaces both with the packaged executables when building the botpack.
+run_command = "..\\venv\\Scripts\\python bot.py"
+run_command_linux = "../venv/bin/python bot.py"
+# One process per car
+hivemind = false
+
+[details]
+description = """
+Offline Heatseeker training goalie - NOT a competitive match bot. \
+It stays on its own half and uses game state setting to teleport onto the incoming ball, \
+then counters with skewed forward-jump hits so you can practise shooting past it. \
+Requires state setting to be enabled in the match (enable_state_setting = true). \
+Offline practice only; not intended for ranked play, tournaments or bot ladders."""
+fun_fact = "Misses almost nothing until the ball is ridiculously fast, then it stands in front of the shot like a wall."
+source_link = "https://github.com/CaYatur/CaYaHeatSeekerBot"
+developer = "CaYaDev"
+language = "Python"
+tags = ["heatseeker", "goalie", "memebot"]
