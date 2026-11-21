@@ -1,33 +1,27 @@
-import subprocess
-import sys
+from pathlib import Path
+from time import sleep
 
-DEFAULT_LOGGER = 'rlbot'
+from rlbot import flat
+from rlbot.managers import MatchManager
 
-if __name__ == '__main__':
+MATCH_CONFIG_FILE = "rlbot.toml"
 
+if __name__ == "__main__":
+    root_dir = Path(__file__).parent
+
+    match_manager = MatchManager()
     try:
-        from rlbot.utils import public_utils, logging_utils
+        # Start RLBotServer and the match (state setting is enabled in rlbot.toml)
+        match_manager.start_match(root_dir / MATCH_CONFIG_FILE)
 
-        logger = logging_utils.get_logger(DEFAULT_LOGGER)
-        if not public_utils.have_internet():
-            logger.log(logging_utils.logging_level,
-                       'Skipping upgrade check for now since it looks like you have no internet')
-        elif public_utils.is_safe_to_upgrade():
-            subprocess.call([sys.executable, "-m", "pip", "install", '-r', 'requirements.txt'])
-            subprocess.call([sys.executable, "-m", "pip", "install", 'rlbot', '--upgrade'])
+        sleep(5)
 
-            # https://stackoverflow.com/a/44401013
-            rlbots = [module for module in sys.modules if module.startswith('rlbot')]
-            for rlbot_module in rlbots:
-                sys.modules.pop(rlbot_module)
-
-    except ImportError:
-        subprocess.call([sys.executable, "-m", "pip", "install", '-r', 'requirements.txt', '--upgrade', '--upgrade-strategy=eager'])
-
-    try:
-        from rlbot import runner
-        runner.main()
-    except Exception as e:
-        print("Encountered exception: ", e)
-        print("Press enter to close.")
-        input()
+        # Wait for the match to end, or press Ctrl+C to stop
+        while (
+            match_manager.packet is None
+            or match_manager.packet.match_info.match_phase != flat.MatchPhase.Ended
+        ):
+            sleep(0.1)
+    finally:
+        # Ensure RLBotServer shuts down
+        match_manager.shut_down()

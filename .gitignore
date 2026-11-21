@@ -114,3 +114,11 @@ __pycache__/
 *.pyc
 .idea/
 .vscode/
+
+# PyInstaller spec used by bob for the RLBot v5 botpack
+!bot.spec
+
+# bob build output
+bob_build/
+bob_build_*/
+buildinfo.toml

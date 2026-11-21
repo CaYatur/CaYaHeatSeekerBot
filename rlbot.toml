@@ -1,0 +1,27 @@
+#:schema https://rlbot.org/schemas/match.json
+# Heatseeker practice: you (blue) vs CaYaHeatSeekerBot (orange).
+[rlbot]
+# "Steam", "Epic", "Custom", "NoLaunch"
+launcher = "Steam"
+auto_start_agents = true
+wait_for_agents = true
+
+[match]
+game_mode = "Heatseeker"
+game_map_upk = "Stadium_P"
+existing_match_behavior = "Restart"
+enable_rendering = true
+# REQUIRED: the bot teleports itself with game state setting
+enable_state_setting = true
+
+[mutators]
+match_length = "Unlimited"
+max_score = "Unlimited"
+
+[[cars]]
+type = "Human"
+team = 0
+
+[[cars]]
+config_file = "src/bot.toml"
+team = 1

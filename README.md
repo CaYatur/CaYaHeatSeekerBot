@@ -10,6 +10,9 @@ Camps its own net, state-sets onto incoming shots, and counters with skewed forw
 
 Offline practice only. Not for ranked, online, or RLBot tournaments.
 
+> **RLBot v5.** This branch targets [RLBot v5](https://rlbot.org) (python package `rlbot` 2.x, `bot.toml`).
+> The original **RLBot v4** version (RLBotGUI, `bot.cfg`) lives on the [`v4` branch](https://github.com/CaYatur/CaYaHeatSeekerBot/tree/v4).
+
 ## Features
 
 - **Goalie only** — stays on its own half, waits near the net, does not roam midfield.
@@ -22,26 +25,28 @@ Offline practice only. Not for ranked, online, or RLBot tournaments.
 
 State Setting must be enabled. Without it the bot cannot teleport and will look stuck.
 
-## Install the bot (easiest)
+## Install the bot (RLBot v5 GUI)
 
-1. Install [RLBotGUI](https://rlbot.org) if needed.
-2. On this GitHub page click green **Code** → **Download ZIP**.
-3. Extract the zip. Open folders until you see `bot.cfg`  
-   (usually `CaYaHeatSeekerBot-main/src`).
-4. RLBotGUI → **+ Add** → pick that folder  
-   (or **Manage bot folders** → add the same folder).  
-   **CaYaHeatSeekerBot** should show up in the bot list.
-
-Git: git clone https://github.com/CaYatur/CaYaHeatSeekerBot.git
-
-Then Add the `src` folder the same way.
+1. Install the [RLBot v5 GUI](https://rlbot.org) and Python 3.11+.
+2. Download this repo (green **Code** → **Download ZIP**, or `git clone https://github.com/CaYatur/CaYaHeatSeekerBot.git`) and extract it.
+3. In the repo folder create the virtual environment the bot's `run_command` expects:
+   ```
+   python -m venv venv
+   venv\Scripts\pip install -r requirements.txt        (Windows)
+   venv/bin/pip install -r requirements.txt              (Linux)
+   ```
+4. In the RLBot GUI add the repo folder (or `src`) as a bot folder. It finds `src/bot.toml` and
+   **CaYaHeatSeekerBot** shows up in the bot list.
 
 ## Play
 
-1. RLBotGUI → **Extra** → tick **Enable State Setting**.
-2. Match settings → mode **Heatseeker**.
-3. Drag **CaYaHeatSeekerBot** onto a team. Put yourself on the other team to shoot on it.
-4. Start match.
+1. Enable **State Setting** for the match (in the GUI's match/extra settings, or `enable_state_setting = true` in a match toml).
+2. Game mode **Heatseeker**.
+3. Put **CaYaHeatSeekerBot** on a team and yourself on the other team to shoot on it.
+4. Start the match.
+
+Without the GUI: activate the venv and run `python run.py`. It starts RLBotServer with `rlbot.toml`
+(Heatseeker, state setting on, you on blue vs. the bot on orange).
 
 ## Example setups
 
@@ -69,17 +74,19 @@ CaYaHeatSeekerBot only defends. It will not take kickoff. Put a simple hitter ne
 
 Psyonix Allstar / ReliefBot / the Python example bot are enough for the first touch. After that CaYa holds their net and you practice scoring on a keeper that almost does not concede.
 
-Both setups: Extra → **Enable State Setting**, mode **Heatseeker**.
+Both setups: **State Setting** enabled, mode **Heatseeker**. Bot names above are from the v4 bot pack; use whatever the v5 bot pack offers if a name is missing.
 
 ## Files
 
 | File | Role |
 |---|---|
 | `src/bot.py` | Save and counter logic |
-| `src/bot.cfg` | Name, tags, logo |
-| `src/appearance.cfg` | Loadout |
+| `src/bot.toml` | Agent id, name, run command, details and tags |
+| `src/loadout.toml` | Loadout |
 | `src/logo.png` | GUI icon |
 | `src/util/` | Vec / steer helpers |
+| `rlbot.toml`, `run.py` | Local Heatseeker practice match |
+| `bob.toml`, `bot.spec` | Build config for the RLBot v5 botpack ([bob](https://github.com/RLBot/bob) + PyInstaller) |
 
 ## Notes
 

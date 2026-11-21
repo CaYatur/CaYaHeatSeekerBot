@@ -1,18 +1,19 @@
-from dataclasses import dataclass
-from typing import List
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from typing import override
 
-from rlbot.agents.base_agent import SimpleControllerState
-from rlbot.utils.structures.game_data_struct import GameTickPacket
+from rlbot.flat import ControllerState, GamePacket
 
 
-@dataclass
+@dataclass(slots=True)
 class StepResult:
-    controls: SimpleControllerState
+    controls: ControllerState
     done: bool
 
 
-class Step:
-    def tick(self, packet: GameTickPacket) -> StepResult:
+class Step(ABC):
+    @abstractmethod
+    def tick(self, packet: GamePacket) -> StepResult:
         """
         Return appropriate controls for this step in the sequence. If the step is over, you should
         set done to True in the result, and we'll move on to the next step during the next frame.
@@ -22,42 +23,46 @@ class Step:
         raise NotImplementedError
 
 
+@dataclass(slots=True)
 class ControlStep(Step):
     """
     This allows you to repeat the same controls every frame for some specified duration. It's useful for
     scheduling the button presses needed for kickoffs / dodges / etc.
     """
-    def __init__(self, duration: float, controls: SimpleControllerState):
-        self.duration = duration
-        self.controls = controls
-        self.start_time: float = None
 
-    def tick(self, packet: GameTickPacket) -> StepResult:
+    duration: float
+    controls: ControllerState
+
+    start_time: float | None = field(default=None, init=False)
+
+    @override
+    def tick(self, packet: GamePacket) -> StepResult:
         if self.start_time is None:
-            self.start_time = packet.game_info.seconds_elapsed
-        elapsed_time = packet.game_info.seconds_elapsed - self.start_time
+            self.start_time = packet.match_info.seconds_elapsed
+        elapsed_time = packet.match_info.seconds_elapsed - self.start_time
         return StepResult(controls=self.controls, done=elapsed_time > self.duration)
 
 
+@dataclass(slots=True)
 class Sequence:
-    def __init__(self, steps: List[Step]):
-        self.steps = steps
-        self.index = 0
-        self.done = False
+    steps: list[Step]
 
-    def tick(self, packet: GameTickPacket):
+    index: int = field(default=0, init=False)
+    done: bool = field(default=False, init=False)
+
+    def tick(self, packet: GamePacket) -> ControllerState:
         while self.index < len(self.steps):
             step = self.steps[self.index]
             result = step.tick(packet)
-            if result is None or result.controls is None or result.done:
+            if result.done:
                 self.index += 1
                 if self.index >= len(self.steps):
                     # The bot will know not to use this sequence next frame, even though we may be giving it controls.
                     self.done = True
-            if result is not None and result.controls is not None:
-                # If the step was able to give us controls, return them to the bot.
-                return result.controls
+            # If the step was able to give us controls, return them to the bot.
+            return result.controls
             # Otherwise we will loop to the next step in the sequence.
+
         # If we reach here, we ran out of steps to attempt.
         self.done = True
-        return None
+        return ControllerState()

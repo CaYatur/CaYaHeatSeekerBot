@@ -1,9 +1,13 @@
 import math
+from dataclasses import dataclass
+
+from rlbot.flat import Rotator
 
 from util.vec import Vec3
 
 
 # This is a helper class for calculating directions relative to your car. You can extend it or delete if you want.
+@dataclass(init=False, slots=True)
 class Orientation:
     """
     This class describes the orientation of an object from the rotation of the object.
@@ -11,10 +15,18 @@ class Orientation:
     It can also be used to find relative locations.
     """
 
-    def __init__(self, rotation):
+    yaw: float
+    roll: float
+    pitch: float
+
+    forward: Vec3
+    right: Vec3
+    up: Vec3
+
+    def __init__(self, rotation: Rotator):
+        self.pitch = float(rotation.pitch)
         self.yaw = float(rotation.yaw)
         self.roll = float(rotation.roll)
-        self.pitch = float(rotation.pitch)
 
         cr = math.cos(self.roll)
         sr = math.sin(self.roll)
@@ -24,8 +36,8 @@ class Orientation:
         sy = math.sin(self.yaw)
 
         self.forward = Vec3(cp * cy, cp * sy, sp)
-        self.right = Vec3(cy*sp*sr-cr*sy, sy*sp*sr+cr*cy, -cp*sr)
-        self.up = Vec3(-cr*cy*sp-sr*sy, -cr*sy*sp+sr*cy, cp*cr)
+        self.right = Vec3(cy * sp * sr - cr * sy, sy * sp * sr + cr * cy, -cp * sr)
+        self.up = Vec3(-cr * cy * sp - sr * sy, -cr * sy * sp + sr * cy, cp * cr)
 
 
 # Sometimes things are easier, when everything is seen from your point of view.
