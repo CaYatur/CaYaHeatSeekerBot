@@ -65,14 +65,14 @@ You can add the same bot twice in the RLBot v5 GUI, so both nets get a keeper.
 
 ### Shooting / beat-the-keeper practice
 
-CaYaHeatSeekerBot only defends. It will not take kickoff. Put a simple hitter next to it so the rally starts.
+CaYaHeatSeekerBot only defends. It does not rush the kickoff: if nobody touches the ball, it starts the play itself after about 5–10 seconds.
 
 | Team | Player |
 |---|---|
 | Your team | You |
-| Other team | **CaYaHeatSeekerBot** + **Psyonix Allstar** (or any pack bot that kicks the ball) |
+| Other team | **CaYaHeatSeekerBot** (optionally + a v5 botpack bot for faster kickoffs) |
 
-Psyonix Allstar or any v5 botpack bot (Noob Black, Element, Wisp…) is enough for the first touch. After that CaYa holds their net and you practice scoring on a keeper that almost does not concede.
+For a faster start, take the kickoff yourself or add any v5 botpack bot (Noob Black, Element, Wisp…) as a teammate. After that CaYa holds its net and you practice scoring on a keeper that almost does not concede.
 
 Both setups: **State Setting** enabled, mode **Heatseeker**.
 
